@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>粒子背景示例</title>
+  <meta name="description" content="一个带有粒子背景效果的本地可打开页面" />
+  <meta name="color-scheme" content="light dark" />
+  <style>
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      background: #0b1220;
+      color: #e5e7eb;
+      overflow: hidden; /* 防止滚动条闪动 */
+    }
+    #tsparticles { position: fixed; inset: 0; z-index: 0; }
+    .center {
+      position: relative; z-index: 1;
+      height: 100%; display: grid; place-items: center; padding: 24px;
+    }
+    .card {
+      width: min(680px, 92vw);
+      padding: 28px 24px; border-radius: 16px;
+      background: rgba(17, 24, 39, 0.6);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    h1 { margin: 0 0 8px; font-size: 32px; line-height: 1.2; }
+    p { margin: 0 0 16px; color: #a5b4fc; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06); color: #fff; text-decoration: none; font-weight: 600;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.12); }
+    .chip { display: inline-block; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: #c7d2fe; font-size: 12px; }
+  </style>
+  <!-- tsParticles 粒子引擎（CDN，需要联网） -->
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+</head>
+<body>
+  <!-- 粒子画布 -->
+  <div id="tsparticles"></div>
+
+  <!-- 页面内容 -->
+  <div class="center">
+    <div class="card">
+      <span class="chip">粒子背景</span>
+      <h1>你好，Hui</h1>
+      <p>这是一个带链接线条与浮动粒子的背景效果，双击即可本地预览。</p>
+      <div class="actions">
+        <a class="btn" href="#" onclick="location.reload()">刷新效果</a>
+        <a class="btn" href="javascript:void 0" onclick="toggleMotion()" id="motionBtn">暂停动画</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let motionPaused = false;
+    let containerRef = null;
+
+    function toggleMotion() {
+      if (!containerRef) return;
+      motionPaused = !motionPaused;
+      const btn = document.getElementById('motionBtn');
+      if (motionPaused) {
+        containerRef.pause();
+        btn.textContent = '开始动画';
+      } else {
+        containerRef.play();
+        btn.textContent = '暂停动画';
+      }
+    }
+
+    // 粒子配置：接近 bootstrapmb 上常见的「连线粒子」风格
+    const particlesOptions = {
+      background: { color: { value: '#0b1220' } },
+      fpsLimit: 60,
+      detectRetina: true,
+      fullScreen: { enable: false },
+      particles: {
+        number: { value: 90, density: { enable: true, area: 900 } },
+        color: { value: ['#60a5fa', '#34d399', '#f472b6', '#f59e0b'] },
+        shape: { type: 'circle' },
+        opacity: { value: 0.6, random: false, animation: { enable: false } },
+        size: { value: { min: 1, max: 3 }, animation: { enable: false } },
+        links: {
+          enable: true,
+          distance: 130,
+          color: '#93c5fd',
+          opacity: 0.35,
+          width: 1
+        },
+        move: {
+          enable: true,
+          speed: 1.2,
+          direction: 'none',
+          random: false,
+          straight: false,
+          outModes: { default: 'out' },
+          attract: { enable: false }
+        }
+      },
+      interactivity: {
+        detectsOn: 'window',
+        events: {
+          onHover: { enable: true, mode: 'repulse' },
+          onClick: { enable: true, mode: 'push' },
+          resize: true
+        },
+        modes: {
+          repulse: { distance: 120, duration: 0.4 },
+          push: { quantity: 4 }
+        }
+      }
+    };
+
+    (async () => {
+      // 初始化 tsParticles 到指定容器
+      const { tsParticles } = window;
+      containerRef = await tsParticles.load('tsparticles', particlesOptions);
+    })();
+  </script>
+</body>
+</html>
